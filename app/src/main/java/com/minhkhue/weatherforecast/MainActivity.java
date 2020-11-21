@@ -1,20 +1,17 @@
 package com.minhkhue.weatherforecast;
 
-import androidx.appcompat.app.AppCompatActivity;
-
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.squareup.picasso.Picasso;
@@ -42,39 +39,36 @@ public class MainActivity extends AppCompatActivity {
            String city = edtSearch.getText().toString().trim();
            if (city.equals("")){
                currentCity = "Ha Noi";
-               getCurrentWeatherData(currentCity);
            }
            else {
                currentCity = city;
-               getCurrentWeatherData(currentCity);
            }
+            getCurrentWeatherData(currentCity);
             getCurrentWeatherData(city);
         });
-        btnChangeActivity.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String city = edtSearch.getText().toString().trim();
-                Intent intent = new Intent(MainActivity.this, MainActivity2.class);
-                intent.putExtra("City", city);
-                startActivity(intent);
-            }
+        btnChangeActivity.setOnClickListener(v -> {
+            String city = edtSearch.getText().toString().trim();
+            Intent intent = new Intent(MainActivity.this, MainActivity2.class);
+            intent.putExtra("City", city);
+            startActivity(intent);
         });
     }
 
     public void getCurrentWeatherData(String data) {
         RequestQueue requestQueue = Volley.newRequestQueue(MainActivity.this);
-        String url = "http://api.openweathermap.org/data/2.5/weather?q="+data+"&units=metric&appid=88967936556921d3b145758f422da297";
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url, response ->
+        String url = "http://api.openweathermap.org/data/2.5/weather?q="+data+"&units=metric&appid=3c9fbec2a39a57987c6d4d62b337b3c8";
+        @SuppressLint("SetTextI18n") StringRequest stringRequest = new StringRequest(Request.Method.GET, url, response ->
         {
             try {
                 JSONObject jsonObject = new JSONObject(response);
 
-                String day = jsonObject.getString("dt");
                 String location = jsonObject.getString("name");
                 tvCity.setText("City: "+location);
-                long l = Long.valueOf(day);
+
+                String day = jsonObject.getString("dt");
+                long l = Long.parseLong(day);
                 Date date = new Date(l*1000L);
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEEE yyyy-mm-dd HH:mm");
+                @SuppressLint("SimpleDateFormat") SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEEE yyyy-MM-dd HH:mm");
                 String Day = simpleDateFormat.format(date);
                 tvDay.setText(Day);
 
@@ -88,9 +82,9 @@ public class MainActivity extends AppCompatActivity {
                 JSONObject jsonObjectMain = jsonObject.getJSONObject("main");
                 String temperature = jsonObjectMain.getString("temp");
                 String Humidity = jsonObjectMain.getString("humidity");
-                Double a = Double.valueOf(temperature);
-                String Temperature = String.valueOf(a.intValue());
-                tvTemperature.setText(Temperature+" C");
+                double a = Double.parseDouble(temperature);
+                String Temperature = String.valueOf((int) a);
+                tvTemperature.setText(Temperature+" °C");
                 tvHumidity.setText(Humidity+"%");
 
                 JSONObject jsonObjectWind = jsonObject.getJSONObject("wind");
