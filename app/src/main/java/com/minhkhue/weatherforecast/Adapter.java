@@ -38,22 +38,34 @@ public class Adapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        convertView = layoutInflater.inflate(R.layout.listview_item, null);
+        ViewHolder viewHolder;
+        if (convertView == null){
+            convertView = LayoutInflater.from(context).inflate(R.layout.listview_item, parent, false);
+            viewHolder = new ViewHolder();
+            viewHolder.tvDay = convertView.findViewById(R.id.tv_Day);
+            viewHolder.tvStatus = convertView.findViewById(R.id.tv_Status);
+            viewHolder.tvMaxTemp = convertView.findViewById(R.id.max_temp);
+            viewHolder.tvMinTemp = convertView.findViewById(R.id.min_temp);
+            viewHolder.iconWeather = convertView.findViewById(R.id.icon_weather);
+            convertView.setTag(viewHolder);
+        }
+        else {
+            viewHolder = (ViewHolder) convertView.getTag();
+        }
+
         Weather weather = weatherArrayList.get(position);
-
-        TextView tvDay = convertView.findViewById(R.id.tv_Day);
-        TextView tvStatus = convertView.findViewById(R.id.tv_Status);
-        TextView tvMaxTemp = convertView.findViewById(R.id.max_temp);
-        TextView tvMinTemp = convertView.findViewById(R.id.min_temp);
-        ImageView iconWeather = convertView.findViewById(R.id.icon_weather);
-
-        tvDay.setText(weather.day);
-        tvStatus.setText(weather.status);
-        tvMaxTemp.setText(weather.maxTemp+"°C");
-        tvMinTemp.setText(weather.minTemp+"°C");
-        Picasso.get().load("https://openweathermap.org/img/w/"+weather.icon+".png").into(iconWeather);
-
+        viewHolder.tvDay.setText(weather.day);
+        viewHolder.tvStatus.setText(weather.status);
+        viewHolder.tvMaxTemp.setText(weather.maxTemp+"°C");
+        viewHolder.tvMinTemp.setText(weather.minTemp+"°C");
+        Picasso.get().load("https://openweathermap.org/img/w/"+weather.icon+".png").into(viewHolder.iconWeather);
         return convertView;
+    }
+    public class ViewHolder {
+        private TextView tvDay;
+        private TextView tvStatus;
+        private TextView tvMaxTemp;
+        private TextView tvMinTemp;
+        private ImageView iconWeather;
     }
 }
